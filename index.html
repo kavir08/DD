@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Disease Detectives — Summer Course</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a0e1a;color:#e8f0fe;font-family:Georgia,serif;min-height:100vh}
+.wrap{max-width:720px;margin:0 auto;padding:16px}
+.card{background:#1a1f35;border-radius:12px;padding:18px;margin-bottom:14px;border:1px solid #2a3550}
+.card-accent{background:#1a1f35;border-radius:12px;padding:18px;margin-bottom:14px}
+.btn{border:none;border-radius:10px;padding:14px 18px;font-size:16px;cursor:pointer;font-family:Georgia,serif;width:100%;color:#fff;margin-bottom:10px;display:block;text-align:center}
+.btn-outline{background:#1a1f35;border:1px solid #2a3a6a;color:#b8c8e8}
+.btn-done{background:#2a4a2a}
+.btn-disabled{background:#2a3550;cursor:default}
+.back-btn{background:rgba(255,255,255,.2);border:none;color:#fff;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:14px;margin-bottom:12px}
+.label{font-size:11px;color:#8899bb;letter-spacing:1px;margin-bottom:8px}
+.sub{color:#8899bb}
+.dim{color:#4a5a7a}
+.pbar-wrap{background:#0a0e1a;border-radius:8px;height:8px;overflow:hidden}
+.pbar{height:100%;border-radius:8px;background:linear-gradient(90deg,#1a6b3c,#4af);transition:width .4s}
+.pbar-sm{background:#0a0e1a;border-radius:6px;height:6px;overflow:hidden;margin-top:6px}
+.pbar-sm-fill{height:100%;border-radius:6px}
+.tag{display:inline-block;border-radius:20px;padding:4px 12px;font-size:13px;margin:3px;background:#0a0e1a;color:#b8c8e8}
+.row{display:flex;align-items:center;gap:14px}
+.circle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;font-weight:bold;color:#fff}
+.stat-box{flex:1;background:#12182c;border-radius:10px;padding:10px 6px;text-align:center}
+.stat-num{font-size:22px;font-weight:bold}
+.stat-lbl{font-size:11px;color:#8899bb}
+.concept-row{display:flex;gap:10px;margin-bottom:10px;font-size:15px;line-height:1.6}
+.arrow{flex-shrink:0;filter:brightness(1.6)}
+.qbar-wrap{display:flex;gap:6px;margin-bottom:22px}
+.qbar{flex:1;height:5px;border-radius:4px}
+.opt-btn{display:flex;align-items:center;gap:12px;text-align:left;padding:13px 16px;border-radius:10px;border:1px solid #2a3550;background:#1a1f35;color:#e8f0fe;cursor:pointer;font-size:15px;font-family:Georgia,serif;width:100%;margin-bottom:10px}
+.opt-btn:disabled{cursor:default}
+.opt-letter{width:26px;height:26px;border-radius:50%;border:1px solid #4a5a7a;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px}
+.explain{padding:14px 16px;background:#0d1525;border-radius:10px;margin-bottom:14px;font-size:14px;line-height:1.6;color:#c8d8f8}
+.hero{background:linear-gradient(135deg,#0d1b3e,#1a0a2e);padding:28px 20px;text-align:center;border-bottom:1px solid #1a2540}
+.week-row{background:#1a1f35;border-radius:14px;padding:16px 18px;cursor:pointer;margin-bottom:14px;display:flex;align-items:center;gap:14px}
+.week-icon{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.day-row{background:#1a1f35;border-radius:12px;padding:16px 18px;margin-bottom:12px;cursor:pointer;display:flex;align-items:center;gap:14px}
+.fc-card{background:#1a1f35;border-radius:16px;padding:32px;text-align:center;border:1px solid #2a3550;margin-bottom:18px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.green{color:#2ec36b}
+.orange{color:#e8a33d}
+.result-score{font-size:36px;font-weight:bold;text-align:center;padding-top:8px}
+.result-msg{font-size:14px;color:#9aaccc;margin:8px 0 16px;text-align:center}
+.tip-box{background:#0d1218;border-radius:12px;padding:18px;margin-top:8px;border:1px solid #1a2540;font-size:14px;color:#8899bb;line-height:1.8}
+.fun-box{background:#1a2a10;border-radius:12px;padding:18px;margin-bottom:14px;border:1px solid #3a6a2055;font-size:15px;line-height:1.7}
+.quiz-box{border-radius:12px;padding:20px;margin-bottom:14px}
+.header-bar{padding:18px 20px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const weeks = [{
+  week: 1,
+  theme: "What is Public Health?",
+  color: "#1a6b3c",
+  icon: "🌍",
+  days: [{
+    day: 1,
+    title: "Public Health vs. Clinical Medicine",
+    objective: "Understand the big difference between treating one patient vs. protecting whole communities.",
+    concepts: ["Clinical medicine focuses on diagnosing and treating individual patients.", "Public health focuses on preventing disease across entire populations.", "Public health examines environment, behavior, and lifestyle — not just medicine."],
+    activity: "Draw a T-chart: write 3 things a doctor does vs. 3 things a public health official does. Who would investigate a school flu outbreak — the doctor or the public health officer? Why?",
+    vocab: ["Public health", "Clinical medicine", "Population", "Prevention"],
+    funFact: "Only about 25% of our health is determined by medical care. The other 75% is our environment, behaviors, and genes!",
+    quiz: [{
+      q: "What is the PRIMARY focus of public health?",
+      options: ["Treating individual patients", "Preventing disease in populations", "Performing surgery", "Selling medicine"],
+      answer: 1,
+      explain: "Public health protects whole populations through prevention, while clinical medicine treats individuals."
+    }, {
+      q: "A doctor diagnosing and treating one sick child is practicing:",
+      options: ["Public health", "Clinical medicine", "Surveillance", "Epidemiology"],
+      answer: 1,
+      explain: "Diagnosing and treating an individual is the role of clinical medicine."
+    }, {
+      q: "Which would a public health official most likely handle?",
+      options: ["Setting a broken arm", "A whole-school flu outbreak", "Prescribing glasses", "A routine checkup"],
+      answer: 1,
+      explain: "Outbreaks affecting whole populations are a public health responsibility."
+    }]
+  }, {
+    day: 2,
+    title: "History of Epidemiology",
+    objective: "Learn how disease detectives got started — from ancient Greece to COVID.",
+    concepts: ["Hippocrates (~400 BC) first tried to explain disease scientifically, not supernaturally.", "John Snow (1849-54) traced cholera to a London water pump — the first field investigation.", "Edward Jenner developed the smallpox vaccine using cowpox in the 1790s.", "The 1918 flu pandemic, HIV in the 1980s, and COVID-19 in 2020 are major modern events."],
+    activity: "Make a timeline from 400 BC to today. Add at least 6 milestones. Which one do you think was most important? Defend your answer.",
+    vocab: ["Epidemiology", "Pandemic", "Vaccine", "Field investigation"],
+    funFact: "British sailors were called 'limeys' because James Lind discovered limes prevent scurvy — one of the first clinical experiments ever!",
+    quiz: [{
+      q: "Who is known as the 'father of field epidemiology' for tracing cholera to a water pump?",
+      options: ["Hippocrates", "John Snow", "Edward Jenner", "Louis Pasteur"],
+      answer: 1,
+      explain: "John Snow's 1854 Broad Street pump investigation was the first major field epidemiology study."
+    }, {
+      q: "Edward Jenner is famous for developing a vaccine for:",
+      options: ["Polio", "Cholera", "Smallpox", "Measles"],
+      answer: 2,
+      explain: "Jenner used cowpox to create the smallpox vaccine in the 1790s."
+    }, {
+      q: "Who first tried to explain disease scientifically rather than supernaturally?",
+      options: ["John Graunt", "Hippocrates", "Robert Koch", "William Farr"],
+      answer: 1,
+      explain: "Hippocrates (~400 BC) sought rational, natural explanations for disease."
+    }]
+  }, {
+    day: 3,
+    title: "What is Epidemiology?",
+    objective: "Define epidemiology and understand what epidemiologists actually do.",
+    concepts: ["Epidemiology = the study of distribution and determinants of health events in populations.", "Epidemiologists figure out: who gets sick, where, when, and why.", "They help control and prevent health problems — they are the disease detectives!"],
+    activity: "If 50 kids at your school got food poisoning after lunch, what would an epidemiologist want to know? Write 5 questions they'd ask.",
+    vocab: ["Epidemiologist", "Distribution", "Determinant", "Health event"],
+    funFact: "The word 'epidemiology' comes from Greek: epi (upon) + demos (people) + logos (study). It literally means 'the study of what falls upon people'!",
+    quiz: [{
+      q: "Epidemiology is the study of disease in:",
+      options: ["A single patient", "Populations", "Laboratory animals", "Hospitals only"],
+      answer: 1,
+      explain: "Epidemiology studies the distribution and determinants of health events in populations."
+    }, {
+      q: "A 'determinant' in epidemiology is:",
+      options: ["A type of medicine", "A factor that influences a health outcome", "A hospital department", "A lab test"],
+      answer: 1,
+      explain: "Determinants are factors that bring about a change in a health condition."
+    }, {
+      q: "Which question would an epidemiologist NOT typically ask first?",
+      options: ["Who got sick?", "Where did they get sick?", "When did they get sick?", "What is the patient's favorite color?"],
+      answer: 3,
+      explain: "Epidemiologists focus on person, place, and time — not irrelevant personal preferences."
+    }]
+  }, {
+    day: 4,
+    title: "Health Determinants",
+    objective: "Discover what really controls whether we stay healthy.",
+    concepts: ["4 main determinants: Genes & Biology, Health Behaviors, Social Factors, Access to Healthcare.", "Genes/biology only determine about 10-15% of health outcomes.", "Where you live, how you eat, and your stress levels matter enormously.", "Epidemiologists study all these factors to find ways to improve population health."],
+    activity: "Give one example of each of the 4 determinants that affects you personally. Which one do you think you can change the most?",
+    vocab: ["Determinant", "Genetic predisposition", "Social determinants", "Health behavior"],
+    funFact: "Trillions of dollars are spent on healthcare each year, yet it only determines about 25% of how healthy a population is!",
+    quiz: [{
+      q: "Which is NOT one of the 4 main health determinants?",
+      options: ["Genes and biology", "Health behaviors", "Social factors", "Phase of the moon"],
+      answer: 3,
+      explain: "The four determinants are genes/biology, behaviors, social factors, and access to healthcare."
+    }, {
+      q: "Roughly what percent of health outcomes do genes and biology determine?",
+      options: ["10-15%", "50%", "75%", "100%"],
+      answer: 0,
+      explain: "Genes and biology play a smaller role (~10-15%) than many people expect."
+    }, {
+      q: "Eating habits and exercise are an example of which determinant?",
+      options: ["Genes and biology", "Health behaviors", "Access to healthcare", "Climate"],
+      answer: 1,
+      explain: "Diet and exercise are health behaviors we can influence."
+    }]
+  }, {
+    day: 5,
+    title: "Public Health Problems & the Health Impact Pyramid",
+    objective: "Learn what the biggest public health threats are and how to rank interventions.",
+    concepts: ["CDC top 10 issues include: obesity, tobacco, HIV, heart disease, food safety, and motor vehicle injuries.", "The Health Impact Pyramid: most impact at the bottom (socioeconomic factors), least at top (counseling).", "Population-based approaches (like water fluoridation) often help more people than one-on-one interventions."],
+    activity: "Pick one CDC top-10 problem and brainstorm: (1) a population-based solution and (2) an individual-based solution. Which would help more people?",
+    vocab: ["Health Impact Pyramid", "Population-based approach", "High-risk approach", "Chronic disease"],
+    funFact: "Adding fluoride to public water in the 1940s is one of the greatest public health achievements — it was tested in community trials!",
+    quiz: [{
+      q: "On the Health Impact Pyramid, which has the GREATEST population impact?",
+      options: ["One-on-one counseling", "Socioeconomic factors at the base", "Individual prescriptions", "Annual checkups"],
+      answer: 1,
+      explain: "The base of the pyramid (socioeconomic factors) affects the most people."
+    }, {
+      q: "Water fluoridation is an example of a:",
+      options: ["High-risk approach", "Population-based approach", "Surgical intervention", "Clinical diagnosis"],
+      answer: 1,
+      explain: "Fluoridating water helps an entire population at once."
+    }, {
+      q: "Which is a top CDC public health concern?",
+      options: ["Tobacco use", "Left-handedness", "Tall buildings", "Pet ownership"],
+      answer: 0,
+      explain: "Tobacco use is one of the CDC's top public health issues."
+    }]
+  }]
+}, {
+  week: 2,
+  theme: "Surveillance — Watching for Disease",
+  color: "#1a4a7a",
+  icon: "👁️",
+  days: [{
+    day: 6,
+    title: "What is Surveillance?",
+    objective: "Understand how public health tracks disease before it spreads.",
+    concepts: ["Surveillance = ongoing, systematic collection, analysis, and interpretation of health data.", "Goal: provide information for health action.", "Surveillance tells us: Is there a problem? How big? Where? Who?"],
+    activity: "Design a simple surveillance system for tracking flu in your city. What data would you collect? Who would report it to you?",
+    vocab: ["Surveillance", "Data collection", "Health action", "Systematic"],
+    funFact: "The CDC monitors millions of health records, emergency room visits, and even social media to detect disease outbreaks early!",
+    quiz: [{
+      q: "Public health surveillance is best described as:",
+      options: ["A one-time survey", "Ongoing, systematic collection of health data", "Spying on patients", "A type of vaccine"],
+      answer: 1,
+      explain: "Surveillance is the continuous, systematic collection and analysis of health data."
+    }, {
+      q: "The main GOAL of surveillance is to:",
+      options: ["Make money", "Provide information for health action", "Replace doctors", "Punish sick people"],
+      answer: 1,
+      explain: "Surveillance exists to guide public health action."
+    }, {
+      q: "Which question does surveillance help answer?",
+      options: ["Is there a problem?", "What is for lunch?", "Who won the game?", "What is the weather?"],
+      answer: 0,
+      explain: "Surveillance answers whether a health problem exists, how big, where, and who is affected."
+    }]
+  }, {
+    day: 7,
+    title: "Types of Surveillance",
+    objective: "Learn the 4 types of surveillance and when each is used.",
+    concepts: ["Passive surveillance: doctors report cases on their own (simple, but incomplete).", "Active surveillance: health officials call doctors to find cases (more complete, used in outbreaks).", "Sentinel surveillance: selected reporters provide high-quality data on specific diseases.", "Syndromic surveillance: tracks symptoms before a diagnosis is made."],
+    activity: "Match each scenario to the best type: (a) Tracking flu trends citywide, (b) Finding all measles cases after one report, (c) Monitoring a hospital network for rare bacteria, (d) Watching school absences for early flu warning.",
+    vocab: ["Passive surveillance", "Active surveillance", "Sentinel surveillance", "Syndromic surveillance"],
+    funFact: "Syndromic surveillance systems monitor over-the-counter cold medicine sales to detect flu outbreaks before patients even see a doctor!",
+    quiz: [{
+      q: "When health officials actively call doctors to find cases, this is:",
+      options: ["Passive surveillance", "Active surveillance", "Sentinel surveillance", "No surveillance"],
+      answer: 1,
+      explain: "Active surveillance means officials reach out to seek case reports."
+    }, {
+      q: "Tracking symptoms BEFORE a diagnosis is made is called:",
+      options: ["Passive surveillance", "Syndromic surveillance", "Sentinel surveillance", "Active surveillance"],
+      answer: 1,
+      explain: "Syndromic surveillance focuses on symptoms rather than confirmed diagnoses."
+    }, {
+      q: "Doctors reporting cases on their own, without being asked, is:",
+      options: ["Active surveillance", "Passive surveillance", "Syndromic surveillance", "Sentinel surveillance"],
+      answer: 1,
+      explain: "Passive surveillance relies on providers to report cases voluntarily."
+    }]
+  }, {
+    day: 8,
+    title: "The 5-Step Surveillance Process",
+    objective: "Follow the journey of health data from collection to action.",
+    concepts: ["Step 1: Data Collection (disease reports, hospital records, surveys, registries)", "Step 2: Data Analysis (organize by person, place, time)", "Step 3: Data Interpretation (what does it mean?)", "Step 4: Data Dissemination (share with those who need to know)", "Step 5: Link to Action (without action, data serves no purpose!)"],
+    activity: "Role-play: You just got data showing 10 salmonella cases in your city. Walk through each of the 5 steps. What would you do at each stage?",
+    vocab: ["Data analysis", "Data interpretation", "Dissemination", "Notifiable disease"],
+    funFact: "Public health agencies share findings through health bulletins, press releases, social media, and the CDC's weekly Morbidity and Mortality Weekly Report (MMWR)!",
+    quiz: [{
+      q: "What is the FINAL and most important step of surveillance?",
+      options: ["Data collection", "Link to action", "Data analysis", "Filing paperwork"],
+      answer: 1,
+      explain: "Without action, the collected data serves no real purpose."
+    }, {
+      q: "Organizing data by person, place, and time happens during:",
+      options: ["Data collection", "Data analysis", "Dissemination", "Action"],
+      answer: 1,
+      explain: "Data analysis organizes information by person, place, and time."
+    }, {
+      q: "Sharing findings with those who need to know is called:",
+      options: ["Collection", "Dissemination", "Interpretation", "Diagnosis"],
+      answer: 1,
+      explain: "Dissemination is distributing information to those who need it."
+    }]
+  }, {
+    day: 9,
+    title: "Disease Frequency: Endemic, Epidemic, Pandemic",
+    objective: "Know the difference between normal disease levels and true emergencies.",
+    concepts: ["Endemic: disease always present at expected levels in an area (e.g., common cold in winter).", "Outbreak/Epidemic: more cases than expected in a place/time.", "Pandemic: epidemic spreading across multiple countries or continents.", "Cluster: cases grouped closely in time and place.", "Sporadic: rare, irregular occurrences."],
+    activity: "Classify each: (1) COVID-19 in 2020, (2) 5 measles cases at one school, (3) annual flu season, (4) 3 kids in one neighborhood getting leukemia, (5) one random typhoid case.",
+    vocab: ["Endemic", "Epidemic", "Pandemic", "Cluster", "Sporadic"],
+    funFact: "The word 'pandemic' comes from Greek: pan (all) + demos (people). COVID-19 was declared a pandemic by the WHO on March 11, 2020!",
+    quiz: [{
+      q: "A disease that is always present at expected levels in an area is:",
+      options: ["Epidemic", "Endemic", "Pandemic", "Sporadic"],
+      answer: 1,
+      explain: "Endemic means constantly present at expected levels."
+    }, {
+      q: "An epidemic that spreads across several countries or continents is a:",
+      options: ["Cluster", "Endemic", "Pandemic", "Outbreak"],
+      answer: 2,
+      explain: "A pandemic is an epidemic over a very wide area affecting many people."
+    }, {
+      q: "More cases than expected in one place and time is an:",
+      options: ["Endemic", "Epidemic or Outbreak", "Sporadic case", "Immunity"],
+      answer: 1,
+      explain: "An epidemic or outbreak is more cases than normally expected."
+    }]
+  }, {
+    day: 10,
+    title: "Incidence vs. Prevalence",
+    objective: "Master the two most important ways to measure disease in a population.",
+    concepts: ["Incidence: number of NEW cases in a time period divided by population at risk.", "Prevalence: TOTAL cases (old + new) at a single point in time divided by population at risk.", "Incidence helps find CAUSES and risk factors.", "Prevalence helps plan for RESOURCES (hospital beds, medicine, equipment)."],
+    activity: "In a town of 10,000: On Jan 1st there were 100 people with diabetes. During the year, 50 new cases were diagnosed. Calculate: (1) Incidence rate, (2) Prevalence on Jan 1st.",
+    vocab: ["Incidence", "Prevalence", "Rate", "Population at risk"],
+    funFact: "Prevalence is why hospitals plan how many ventilators or ICU beds they need — they need to know the TOTAL burden of disease, not just new cases!",
+    quiz: [{
+      q: "Incidence measures:",
+      options: ["Total existing cases", "New cases in a time period", "Number of deaths", "Number of hospitals"],
+      answer: 1,
+      explain: "Incidence counts NEW cases over a time period."
+    }, {
+      q: "Prevalence measures:",
+      options: ["Only new cases", "Total cases (old + new) at a point in time", "Only deaths", "Recovery rate"],
+      answer: 1,
+      explain: "Prevalence is the total number of existing cases at a given time."
+    }, {
+      q: "Which measure best helps plan how many hospital beds are needed?",
+      options: ["Incidence", "Prevalence", "Mortality", "Birth rate"],
+      answer: 1,
+      explain: "Prevalence shows the total disease burden, useful for resource planning."
+    }]
+  }]
+}, {
+  week: 3,
+  theme: "How Disease Spreads",
+  color: "#7a1a1a",
+  icon: "🦠",
+  days: [{
+    day: 11,
+    title: "The Chain of Infection",
+    objective: "Understand the 6-link chain that must exist for infection to spread.",
+    concepts: ["1. Agent: the microbe causing disease", "2. Reservoir: where the agent lives and reproduces", "3. Portal of exit: how the agent leaves the reservoir", "4. Mode of transmission: how it travels (air, water, contact, vector)", "5. Portal of entry: how it enters a new host", "6. Susceptible host: a person who cannot resist infection"],
+    activity: "Draw the chain of infection for the flu. Then break the chain — identify 3 ways to interrupt it (masks, vaccines, handwashing). Which link does each target?",
+    vocab: ["Agent", "Reservoir", "Vector", "Fomite", "Susceptible host", "Zoonosis"],
+    funFact: "A fomite is any object that carries disease — like a doorknob, phone, or shared pencil. The word comes from Latin 'fomes' meaning tinder!",
+    quiz: [{
+      q: "How many links are in the chain of infection?",
+      options: ["3", "4", "6", "10"],
+      answer: 2,
+      explain: "The chain has 6 links: agent, reservoir, portal of exit, transmission, portal of entry, susceptible host."
+    }, {
+      q: "A doorknob that carries germs is an example of a:",
+      options: ["Vector", "Fomite", "Reservoir", "Host"],
+      answer: 1,
+      explain: "A fomite is an inanimate object that transmits an infectious agent."
+    }, {
+      q: "The place where an agent normally lives and reproduces is the:",
+      options: ["Portal of exit", "Reservoir", "Vector", "Host"],
+      answer: 1,
+      explain: "The reservoir is the habitat where the agent lives and multiplies."
+    }]
+  }, {
+    day: 12,
+    title: "Types of Disease Agents",
+    objective: "Know the major types of pathogens and how they cause disease.",
+    concepts: ["Bacteria: single-celled organisms (e.g., Salmonella, TB, anthrax)", "Viruses: need a host cell to replicate (e.g., flu, COVID, measles)", "Fungi: can cause skin and lung disease (e.g., ringworm, athlete's foot)", "Protozoa: single-celled parasites (e.g., malaria, giardia)", "Prions: misfolded proteins causing brain diseases (e.g., mad cow disease)"],
+    activity: "Research one disease for each agent type. For each: name the disease, the agent, and one way it spreads.",
+    vocab: ["Bacteria", "Virus", "Fungi", "Protozoa", "Prion", "Pathogen"],
+    funFact: "Prions are the strangest of all — they are not even alive! They are just misfolded proteins that cause other proteins to misfold. Mad cow disease is caused by prions!",
+    quiz: [{
+      q: "Which agent needs a host cell to replicate?",
+      options: ["Bacteria", "Virus", "Fungi", "Protozoa"],
+      answer: 1,
+      explain: "Viruses cannot reproduce on their own — they need a host cell."
+    }, {
+      q: "Malaria is caused by which type of agent?",
+      options: ["Virus", "Bacteria", "Protozoa", "Prion"],
+      answer: 2,
+      explain: "Malaria is caused by a protozoan parasite."
+    }, {
+      q: "Mad cow disease is caused by a:",
+      options: ["Bacterium", "Virus", "Prion", "Fungus"],
+      answer: 2,
+      explain: "Prions are misfolded proteins — not even alive — that cause mad cow disease."
+    }]
+  }, {
+    day: 13,
+    title: "Modes of Transmission",
+    objective: "Learn every way disease can travel from person to person or environment.",
+    concepts: ["Direct transmission: physical contact or droplet spread (touching, sneezing)", "Indirect — airborne: droplet nuclei that float in air (TB, measles)", "Indirect — vehicleborne: contaminated food, water, or objects", "Indirect — vectorborne: carried by an organism (mosquitoes carry malaria)", "Biological vectors let the agent reproduce inside them; mechanical vectors just carry it."],
+    activity: "For each disease, identify the mode of transmission: (1) Malaria, (2) Cholera, (3) COVID-19, (4) Food poisoning from bad chicken, (5) Pink eye from touching a doorknob.",
+    vocab: ["Direct transmission", "Airborne", "Vehicleborne", "Vectorborne", "Biological vector", "Mechanical vector"],
+    funFact: "Mosquitoes kill more humans than any other animal on Earth — they transmit malaria, dengue, Zika, West Nile virus, and yellow fever!",
+    quiz: [{
+      q: "Malaria spread by mosquitoes is an example of:",
+      options: ["Direct transmission", "Vectorborne transmission", "Airborne transmission", "Vehicleborne transmission"],
+      answer: 1,
+      explain: "Mosquitoes are vectors, making malaria vectorborne."
+    }, {
+      q: "Cholera from contaminated water is:",
+      options: ["Vehicleborne transmission", "Airborne transmission", "Direct contact", "Vectorborne"],
+      answer: 0,
+      explain: "Contaminated water is a vehicle, so this is vehicleborne transmission."
+    }, {
+      q: "A vector in which the agent reproduces inside it is a:",
+      options: ["Mechanical vector", "Biological vector", "Fomite", "Reservoir"],
+      answer: 1,
+      explain: "Biological vectors host part of the agent's life cycle; mechanical vectors just carry it."
+    }]
+  }, {
+    day: 14,
+    title: "Natural History and Spectrum of Disease",
+    objective: "Follow the journey of disease from first exposure to final outcome.",
+    concepts: ["Susceptibility then Exposure then Subclinical disease then Symptoms then Clinical disease then Outcome", "Incubation period: time from exposure to symptoms (infectious disease)", "Latency period: same concept, used for chronic diseases", "Spectrum: some people get very sick, others mild, some have no symptoms (asymptomatic)"],
+    activity: "Map the natural history of COVID-19 from the moment of exposure to recovery or complications. Include the incubation period.",
+    vocab: ["Incubation period", "Latency period", "Asymptomatic", "Spectrum of disease", "Subclinical"],
+    funFact: "Some people are 'asymptomatic carriers' — they carry and spread a disease without ever feeling sick! This makes disease control much harder!",
+    quiz: [{
+      q: "The time between exposure and the first symptoms of an infectious disease is the:",
+      options: ["Latency period", "Incubation period", "Recovery period", "Spectrum"],
+      answer: 1,
+      explain: "The incubation period is the time from exposure to symptom onset for infectious disease."
+    }, {
+      q: "Someone who carries and spreads disease but feels no symptoms is:",
+      options: ["Immune", "Asymptomatic", "Recovered", "Vaccinated"],
+      answer: 1,
+      explain: "Asymptomatic carriers spread disease without feeling sick."
+    }, {
+      q: "The 'latency period' term is usually used for:",
+      options: ["Infectious disease", "Chronic disease", "Vaccines", "Surgery"],
+      answer: 1,
+      explain: "Latency period is the chronic-disease equivalent of incubation period."
+    }]
+  }, {
+    day: 15,
+    title: "Infectivity, Pathogenicity and Virulence",
+    objective: "Understand 3 key measurements of how dangerous a pathogen really is.",
+    concepts: ["Infectivity: proportion of exposed people who become INFECTED.", "Pathogenicity: proportion of infected people who develop CLINICAL DISEASE.", "Virulence: proportion of clinically ill people who become SEVERELY ILL or die."],
+    activity: "Compare flu vs. rabies. Flu: high infectivity, moderate pathogenicity, low virulence. Rabies: low infectivity, very high pathogenicity, near-100% virulence. Which is more dangerous from a public health perspective?",
+    vocab: ["Infectivity", "Pathogenicity", "Virulence", "Case-fatality rate"],
+    funFact: "Rabies has nearly a 100% case-fatality rate once symptoms appear — but it is very hard to catch. Measles is highly infectious but rarely kills vaccinated populations.",
+    quiz: [{
+      q: "Infectivity measures the proportion of exposed people who:",
+      options: ["Die", "Become infected", "Recover", "Get vaccinated"],
+      answer: 1,
+      explain: "Infectivity is the proportion of exposed people who become infected."
+    }, {
+      q: "Virulence measures the proportion of clinically ill people who:",
+      options: ["Recover quickly", "Become severely ill or die", "Get infected", "Stay healthy"],
+      answer: 1,
+      explain: "Virulence is the proportion of ill people who become severely ill or die."
+    }, {
+      q: "The proportion of infected people who develop actual disease is:",
+      options: ["Infectivity", "Pathogenicity", "Virulence", "Immunity"],
+      answer: 1,
+      explain: "Pathogenicity is the proportion of infected people who develop clinical disease."
+    }]
+  }]
+}, {
+  week: 4,
+  theme: "Outbreak Investigation",
+  color: "#5a2d82",
+  icon: "🔍",
+  days: [{
+    day: 16,
+    title: "The 13 Steps of Outbreak Investigation (Steps 1-4)",
+    objective: "Begin learning the systematic process real disease detectives follow.",
+    concepts: ["Step 1: Prepare for fieldwork (research the disease, gather supplies, contact local officials)", "Step 2: Establish the existence of an outbreak (is there more disease than expected?)", "Step 3: Verify the diagnosis (confirm lab tests, interview sick patients)", "Step 4: Construct a working case definition (clinical criteria + person + place + time)"],
+    activity: "Write a case definition for a school outbreak: 'Students at Jefferson Middle School who developed vomiting and diarrhea within 24 hours of eating cafeteria lunch on Tuesday, May 6.' Identify the 4 components.",
+    vocab: ["Case definition", "Confirmed case", "Probable case", "Possible case"],
+    funFact: "A case definition is incredibly important — changing it can double or halve the number of cases in an outbreak!",
+    quiz: [{
+      q: "A case definition includes clinical criteria plus:",
+      options: ["Person, place, and time", "Cost and insurance", "Name and address only", "Doctor's opinion"],
+      answer: 0,
+      explain: "A case definition specifies clinical criteria and details of person, place, and time."
+    }, {
+      q: "A case with lab confirmation matching the case definition is:",
+      options: ["Possible", "Probable", "Confirmed", "Suspected"],
+      answer: 2,
+      explain: "Confirmed cases have diagnosis matching the definition plus lab verification."
+    }, {
+      q: "Establishing whether there are MORE cases than expected is which step?",
+      options: ["Verify the diagnosis", "Establish the existence of an outbreak", "Prepare for fieldwork", "Communicate findings"],
+      answer: 1,
+      explain: "Step 2 is establishing that an outbreak actually exists."
+    }]
+  }, {
+    day: 17,
+    title: "Steps 5-6: Finding Cases and Descriptive Epidemiology",
+    objective: "Learn how to systematically find and describe an outbreak.",
+    concepts: ["Step 5: Find cases systematically using passive reports, screening, and records review.", "Step 6: Perform descriptive epidemiology — describe by Time, Place, and Person.", "Line listing: a chart tracking every case with ID, onset date, symptoms, age, sex, location, and exposures."],
+    activity: "Create a simple line listing for 5 imaginary food poisoning cases. Include: Case #, Initials, Date of onset, Symptoms, Age, Sex, What they ate. Then describe who got sick, when, and where.",
+    vocab: ["Line listing", "Descriptive epidemiology", "Person, Place, Time", "Case finding"],
+    funFact: "Line listings were used in the 1800s! John Snow created one of the first when tracking cholera cases around London water pumps in 1854.",
+    quiz: [{
+      q: "Descriptive epidemiology describes an outbreak in terms of:",
+      options: ["Cost, time, money", "Person, place, time", "Doctor, nurse, patient", "Past, present, future"],
+      answer: 1,
+      explain: "Descriptive epidemiology organizes data by person, place, and time."
+    }, {
+      q: "A chart listing every case with their details is a:",
+      options: ["Pie chart", "Line listing", "Epi curve", "Spot map"],
+      answer: 1,
+      explain: "A line listing tracks each case's identifying, clinical, and descriptive information."
+    }, {
+      q: "Which is NOT typically in a line listing?",
+      options: ["Date of onset", "Symptoms", "Favorite TV show", "Age"],
+      answer: 2,
+      explain: "Line listings track relevant clinical and descriptive data, not irrelevant preferences."
+    }]
+  }, {
+    day: 18,
+    title: "The Epidemic Curve",
+    objective: "Read and draw epidemic curves to understand outbreak patterns.",
+    concepts: ["Epidemic curve (epi curve): a histogram with time on the x-axis and number of cases on the y-axis.", "Point source outbreak: one peak (everyone exposed at the same time, like a picnic).", "Continuous common source: a plateau (ongoing exposure, like a contaminated water supply).", "Propagated outbreak: multiple rising peaks (person-to-person spread, like measles in a school)."],
+    activity: "Sketch 3 epi curves: (1) 30 people sick after a party buffet all within 12 hours, (2) A contaminated restaurant sickening customers over 2 weeks, (3) Flu spreading through a classroom for 3 weeks. Label each type.",
+    vocab: ["Epidemic curve", "Point source", "Continuous common source", "Propagated outbreak", "Incubation period"],
+    funFact: "By looking at an epi curve, investigators can often work backwards to figure out exactly when exposure happened — even before they know the cause!",
+    quiz: [{
+      q: "An epi curve with a SINGLE sharp peak suggests a:",
+      options: ["Propagated outbreak", "Point source outbreak", "Continuous source", "No outbreak"],
+      answer: 1,
+      explain: "A single peak means everyone was exposed at roughly the same time — a point source."
+    }, {
+      q: "Multiple rising peaks over time suggest:",
+      options: ["Point source", "Propagated (person-to-person) outbreak", "No outbreak", "Continuous source"],
+      answer: 1,
+      explain: "Repeated peaks indicate person-to-person spread over multiple incubation periods."
+    }, {
+      q: "On an epi curve, the x-axis (horizontal) usually shows:",
+      options: ["Number of cases", "Time", "Age", "Location"],
+      answer: 1,
+      explain: "Time is on the x-axis; number of cases is on the y-axis."
+    }]
+  }, {
+    day: 19,
+    title: "Steps 7-9: Hypothesis Development and Testing",
+    objective: "Learn how investigators form and test hypotheses about disease causes.",
+    concepts: ["Step 7: Develop hypotheses using Agent/Host/Environment triad.", "Step 8: Test hypotheses with analytic studies (cohort or case-control).", "Step 9: Refine hypotheses if data does not confirm them — keep investigating!"],
+    activity: "50 people at a company picnic got sick. Your hypothesis: potato salad was contaminated. Design a study to test this. Who do you compare? What do you measure? What result would CONFIRM your hypothesis?",
+    vocab: ["Hypothesis", "Agent-Host-Environment triad", "Cohort study", "Case-control study", "Analytical epidemiology"],
+    funFact: "The most common cause of foodborne outbreaks at picnics is Staphylococcus aureus in potato or egg salad — bacteria that grow fast in warm temperatures!",
+    quiz: [{
+      q: "The three parts of the epidemiologic triad are:",
+      options: ["Agent, host, environment", "Time, place, person", "Doctor, patient, nurse", "Past, present, future"],
+      answer: 0,
+      explain: "The triad is agent, host, and environment."
+    }, {
+      q: "A good hypothesis must be:",
+      options: ["Impossible to test", "Testable", "Always true", "Secret"],
+      answer: 1,
+      explain: "Hypotheses must be in a form that can be tested."
+    }, {
+      q: "If your data does NOT confirm your hypothesis, you should:",
+      options: ["Give up", "Refine and re-evaluate the hypothesis", "Ignore the data", "Change the data"],
+      answer: 1,
+      explain: "Step 9 is to reconsider, refine, and re-evaluate hypotheses."
+    }]
+  }, {
+    day: 20,
+    title: "Steps 10-13: Confirm, Control, and Communicate",
+    objective: "See how investigations end with real action and public communication.",
+    concepts: ["Step 10: Compare with lab/environmental studies — lab proof validates findings.", "Step 11: Implement control measures ASAP — you do not always wait for perfect evidence!", "Step 12: Continue surveillance to make sure control worked.", "Step 13: Communicate findings — oral briefings, written reports, public statements."],
+    activity: "You confirmed Salmonella in a restaurant's chicken. Write a 3-sentence public health announcement for the news. Then list 3 control measures you'd implement immediately.",
+    vocab: ["Control measures", "Lab verification", "Bradford Hill criteria", "Epidemiological report"],
+    funFact: "Public health announcements during outbreaks are a key control measure — telling people 'do not eat X' or 'wash your hands' can stop thousands of additional cases!",
+    quiz: [{
+      q: "When should control measures be implemented?",
+      options: ["Only after all evidence is perfect", "As soon as the source is suspected", "After the outbreak ends", "Never"],
+      answer: 1,
+      explain: "Control measures should be implemented as soon as the source and mode are suspected."
+    }, {
+      q: "What confirms (validates) an epidemiological hypothesis?",
+      options: ["Guessing", "Lab verification", "Public opinion", "The weather"],
+      answer: 1,
+      explain: "Lab verification is needed to validate a hypothesis."
+    }, {
+      q: "The final step of an outbreak investigation is to:",
+      options: ["Communicate findings", "Collect data", "Verify diagnosis", "Prepare for fieldwork"],
+      answer: 0,
+      explain: "Step 13 is communicating findings via briefings and reports."
+    }]
+  }]
+}, {
+  week: 5,
+  theme: "Analytic Epidemiology and Math",
+  color: "#7a5a00",
+  icon: "📊",
+  days: [{
+    day: 21,
+    title: "Study Types: Observational vs. Experimental",
+    objective: "Know the major types of epidemiological studies and when each is used.",
+    concepts: ["Experimental studies: investigators control exposure (clinical trials, community trials).", "Observational studies: nature takes its course; investigators observe.", "Descriptive observational: describes who/when/where without testing causes.", "Analytic observational: compares groups to find causes (cohort and case-control studies)."],
+    activity: "Identify the study type: (1) Testing a new flu vaccine in 500 volunteers, (2) Comparing lung cancer rates in smokers vs. non-smokers, (3) Investigating who got sick and where at a school outbreak, (4) Testing a water filter in 10 villages.",
+    vocab: ["Clinical trial", "Community trial", "Cohort study", "Case-control study", "Cross-sectional study"],
+    funFact: "The 1954 Salk polio vaccine trial was the largest human experiment ever — nearly 2 million children participated! It proved the vaccine worked.",
+    quiz: [{
+      q: "In an experimental study, the investigator:",
+      options: ["Only observes", "Controls the exposure", "Does nothing", "Ignores the subjects"],
+      answer: 1,
+      explain: "In experimental studies, investigators control who gets the exposure or treatment."
+    }, {
+      q: "A study testing a new vaccine in volunteers is a:",
+      options: ["Observational study", "Clinical trial", "Case-control study", "Cross-sectional study"],
+      answer: 1,
+      explain: "Testing a treatment on individuals is a clinical trial (experimental)."
+    }, {
+      q: "In an observational study:",
+      options: ["The investigator controls exposure", "Nature takes its course", "No data is collected", "Subjects are randomized"],
+      answer: 1,
+      explain: "In observational studies, the epidemiologist observes without controlling exposure."
+    }]
+  }, {
+    day: 22,
+    title: "Cohort Studies and Attack Rates",
+    objective: "Master cohort studies and how to calculate attack rates.",
+    concepts: ["Cohort study: follow exposed vs. unexposed people forward in time to see who gets sick.", "Attack rate = number sick divided by total in group.", "Compare attack rate in exposed group vs. unexposed group.", "High attack rate in exposed + low in unexposed = strong evidence of that exposure."],
+    activity: "400 people at a dinner. 150 of 180 who ate the potato salad got sick. 50 of 220 who did not eat it got sick. Calculate: (1) Attack rate for exposed group, (2) Attack rate for unexposed group.",
+    vocab: ["Cohort study", "Attack rate", "Exposed group", "Unexposed group", "Retrospective", "Prospective"],
+    funFact: "Attack rates help investigators find the specific food responsible for an outbreak. The food with the highest attack rate in the exposed group is the prime suspect!",
+    quiz: [{
+      q: "Attack rate is calculated as:",
+      options: ["Number sick / total in group", "Total deaths / births", "Cases / hospitals", "Doctors / patients"],
+      answer: 0,
+      explain: "Attack rate = number who got sick divided by the total in that group."
+    }, {
+      q: "If 150 of 180 people who ate a food got sick, the attack rate is about:",
+      options: ["20%", "50%", "83%", "100%"],
+      answer: 2,
+      explain: "150 divided by 180 = 0.83 = 83%."
+    }, {
+      q: "A cohort study follows groups:",
+      options: ["Backward from disease", "Forward from exposure", "Randomly", "Never"],
+      answer: 1,
+      explain: "Cohort studies start with exposure status and follow forward to see who gets sick."
+    }]
+  }, {
+    day: 23,
+    title: "Relative Risk",
+    objective: "Calculate and interpret relative risk — the key measure of cohort studies.",
+    concepts: ["Relative risk (RR) = Attack rate (exposed) divided by Attack rate (unexposed)", "RR = 1.0: no difference between groups (no association)", "RR > 1.0: exposed group has MORE risk (positive association)", "RR < 1.0: exposed group has LESS risk (possible protective effect)"],
+    activity: "Using Day 22 numbers: (1) Calculate the relative risk. (2) Is the potato salad likely the cause? (3) If RR were 1.1, would you still suspect it? Why or why not?",
+    vocab: ["Relative risk", "Risk ratio", "2x2 table", "Association", "Causation"],
+    funFact: "An RR of 4.0 means you are 4 times more likely to get sick if you ate the suspected food. Investigators look for RR greater than 2.0 as a strong signal!",
+    quiz: [{
+      q: "A relative risk of 1.0 means:",
+      options: ["Strong association", "No association", "Protective effect", "Definitely causes disease"],
+      answer: 1,
+      explain: "RR = 1.0 means the risk is equal in both groups — no association."
+    }, {
+      q: "A relative risk GREATER than 1.0 indicates:",
+      options: ["A protective effect", "An increased risk / positive association", "No risk", "An error"],
+      answer: 1,
+      explain: "RR > 1.0 means exposed people have higher risk."
+    }, {
+      q: "Relative risk is used mainly in which study type?",
+      options: ["Case-control studies", "Cohort studies", "Surveys", "Lab tests"],
+      answer: 1,
+      explain: "Relative risk is calculated in cohort studies; odds ratio is used in case-control studies."
+    }]
+  }, {
+    day: 24,
+    title: "Case-Control Studies and Odds Ratios",
+    objective: "Learn how case-control studies work and calculate odds ratios.",
+    concepts: ["Case-control: start with SICK people (cases) and compare to HEALTHY people (controls).", "Look backwards to find what they were exposed to differently.", "Odds ratio = (a x d) / (b x c) where a=cases exposed, b=controls exposed, c=cases unexposed, d=controls unexposed", "OR > 1 = exposure is associated with disease."],
+    activity: "30 of 40 Hepatitis A patients ate at Restaurant A. 36 of 106 healthy controls ate there. Build a 2x2 table and calculate the odds ratio. What does your result mean?",
+    vocab: ["Case-control study", "Odds ratio", "2x2 table", "Cases", "Controls"],
+    funFact: "Case-control studies are perfect for rare diseases — you'd need millions of people in a cohort study to find enough cases of a rare cancer, but case-control can be done with hundreds!",
+    quiz: [{
+      q: "A case-control study starts by selecting:",
+      options: ["Exposed and unexposed people", "Sick people (cases) and healthy people (controls)", "Only doctors", "Random objects"],
+      answer: 1,
+      explain: "Case-control studies start with cases (sick) and controls (healthy)."
+    }, {
+      q: "The measure of association used in case-control studies is the:",
+      options: ["Relative risk", "Odds ratio", "Attack rate", "Birth rate"],
+      answer: 1,
+      explain: "Odds ratio is the key measure in case-control studies."
+    }, {
+      q: "Case-control studies are especially useful for:",
+      options: ["Common diseases", "Rare diseases", "Healthy people", "Animals only"],
+      answer: 1,
+      explain: "Case-control studies work well for rare diseases needing fewer subjects."
+    }]
+  }, {
+    day: 25,
+    title: "Rates, Ratios and Proportions",
+    objective: "Master the mathematical tools epidemiologists use every day.",
+    concepts: ["Rate: cases in a time period divided by population at risk (always has a time dimension).", "Ratio: comparing two quantities (e.g., death-to-case ratio).", "Proportion: part divided by whole (no time dimension; expressed as %, decimal, or fraction).", "Mortality rate: measure of deaths in a defined population over time.", "Case-fatality rate: deaths from a disease divided by all cases of that disease."],
+    activity: "In a city of 100,000: 200 people died of heart disease this year. 500 had heart disease; 200 died. Calculate: (1) Cause-specific mortality rate per 100,000, (2) Case-fatality rate. What is the difference?",
+    vocab: ["Rate", "Ratio", "Proportion", "Mortality rate", "Case-fatality rate", "Morbidity"],
+    funFact: "COVID-19 had a case-fatality rate of about 1-2% globally — but varied hugely by age. For people over 80 it was over 15%; for children under 0.01%!",
+    quiz: [{
+      q: "Which measure always includes a TIME dimension?",
+      options: ["Proportion", "Ratio", "Rate", "Percentage"],
+      answer: 2,
+      explain: "A rate always depends on a specific time period and population."
+    }, {
+      q: "Case-fatality rate is calculated as:",
+      options: ["Deaths / total population", "Deaths from a disease / all cases of that disease", "Births / deaths", "Cases / doctors"],
+      answer: 1,
+      explain: "Case-fatality rate = deaths from the disease divided by all cases of it."
+    }, {
+      q: "A proportion expresses:",
+      options: ["A part compared to the whole", "Two unrelated numbers", "A speed", "A time period"],
+      answer: 0,
+      explain: "A proportion is a part divided by the whole, with no time dimension."
+    }]
+  }]
+}, {
+  week: 6,
+  theme: "Patterns, Charts and Data",
+  color: "#1a5a5a",
+  icon: "📈",
+  days: [{
+    day: 26,
+    title: "Reading and Making Tables",
+    objective: "Learn how to organize and read epidemiological data tables.",
+    concepts: ["Tables should have a clear title (what, where, when).", "Simple tables with 2-3 variables are most effective.", "Rows, columns, and totals should all be clearly labeled.", "Include units of measurement and footnotes for any abbreviations."],
+    activity: "Flu case data: 40 in January, 75 in February, 120 in March, 80 in April, 30 in May. Create a proper two-column table with title, headers, and totals. What trend do you see?",
+    vocab: ["Data table", "Variable", "Frequency", "Row", "Column", "Total"],
+    funFact: "John Graunt created the first statistical analysis of death data in 1662. His mortality tables in London helped create the science of statistics!",
+    quiz: [{
+      q: "A good data table title should describe:",
+      options: ["What, where, and when", "The author's name only", "Nothing", "The weather"],
+      answer: 0,
+      explain: "Titles should clearly describe what, where, and when the data was collected."
+    }, {
+      q: "How many variables make the clearest tables?",
+      options: ["2-3", "10-15", "50", "100"],
+      answer: 0,
+      explain: "Simple tables with 2-3 variables are most effective."
+    }, {
+      q: "Abbreviations in a table should be:",
+      options: ["Left unexplained", "Explained in a footnote", "Removed entirely", "Made up"],
+      answer: 1,
+      explain: "Codes and abbreviations should be explained in a footnote."
+    }]
+  }, {
+    day: 27,
+    title: "Graphs: Histograms and Line Graphs",
+    objective: "Create and interpret the graphs used most in epidemiology.",
+    concepts: ["Histogram: shows frequency distribution — bars touch each other (used for epi curves).", "Line graph: shows trends over time — good for continuous data.", "X-axis: independent variable (usually time).", "Y-axis: dependent variable (usually number of cases or rate)."],
+    activity: "Using the flu data from Day 26, create both a histogram and a line graph. Which better shows the epidemic peak? When did the epidemic peak, start, and end?",
+    vocab: ["Histogram", "Line graph", "X-axis", "Y-axis", "Frequency polygon"],
+    funFact: "The epi curve (epidemic curve) is always drawn as a histogram — not a line graph — because each bar represents a fixed time period, not a point in time!",
+    quiz: [{
+      q: "An epi curve is always drawn as a:",
+      options: ["Pie chart", "Histogram", "Line graph", "Scatter plot"],
+      answer: 1,
+      explain: "Epi curves are histograms because each bar represents a fixed time interval."
+    }, {
+      q: "On most epidemiology graphs, the x-axis shows:",
+      options: ["Number of cases", "Time", "Money", "Names"],
+      answer: 1,
+      explain: "The x-axis usually shows the independent variable, which is time."
+    }, {
+      q: "In a histogram, the bars:",
+      options: ["Have big gaps between them", "Touch each other", "Are circular", "Point downward"],
+      answer: 1,
+      explain: "Histogram bars touch because they represent continuous intervals."
+    }]
+  }, {
+    day: 28,
+    title: "Charts: Bar, Pie and Maps",
+    objective: "Know when to use bar charts, pie charts, and spot maps.",
+    concepts: ["Bar chart: compare categories (e.g., cases by age group or food eaten).", "Pie chart: show proportions of a whole (e.g., % of cases by disease type).", "Spot map: place dots where each case lives/works — reveals geographic clusters.", "Choropleth map: shades areas by rate — shows regional patterns."],
+    activity: "Draw a spot map of your school or neighborhood. Imagine 8 flu cases — place them on the map. Do you see any clusters? What hypothesis might that suggest?",
+    vocab: ["Bar chart", "Pie chart", "Spot map", "Choropleth map", "Cluster"],
+    funFact: "John Snow's famous 1854 spot map of cholera cases around London water pumps is one of the most famous maps in history — it's how he proved cholera was waterborne!",
+    quiz: [{
+      q: "A spot map is best for showing:",
+      options: ["Time trends", "Geographic location of cases", "Money spent", "Age groups"],
+      answer: 1,
+      explain: "Spot maps show where cases occur, revealing geographic clusters."
+    }, {
+      q: "A pie chart is best for showing:",
+      options: ["Proportions of a whole", "Geographic spread", "Time trends", "Exact case counts over years"],
+      answer: 0,
+      explain: "Pie charts show how parts make up a whole."
+    }, {
+      q: "A choropleth map shows data by:",
+      options: ["Dots for each case", "Shading areas by rate", "Lines over time", "Pictures of people"],
+      answer: 1,
+      explain: "Choropleth maps shade geographic areas based on rates."
+    }]
+  }, {
+    day: 29,
+    title: "Mean, Median, Mode and Measures of Spread",
+    objective: "Master the statistical measures used to summarize health data.",
+    concepts: ["Mean (average): sum of values divided by number of values.", "Median: middle value when data is ordered (better for skewed data).", "Mode: most frequently occurring value.", "Range: difference between largest and smallest values.", "Standard deviation: how spread out the values are around the mean."],
+    activity: "Ages of 10 flu patients: 5, 7, 7, 12, 15, 22, 34, 45, 67, 80. Calculate: (1) Mean, (2) Median, (3) Mode, (4) Range. Is the data skewed? Which measure better represents the typical patient?",
+    vocab: ["Mean", "Median", "Mode", "Range", "Standard deviation", "Skewed distribution"],
+    funFact: "Epidemiologists usually prefer the median over the mean for age data — one very old or very young patient can pull the mean far from the typical patient!",
+    quiz: [{
+      q: "The 'mode' of a data set is the:",
+      options: ["Average", "Middle value", "Most frequent value", "Largest value"],
+      answer: 2,
+      explain: "The mode is the value that occurs most often."
+    }, {
+      q: "The median is the:",
+      options: ["Average of all values", "Middle value when ordered", "Most common value", "Difference between high and low"],
+      answer: 1,
+      explain: "The median is the middle value of ordered data."
+    }, {
+      q: "The range is calculated as:",
+      options: ["Sum of all values", "Largest value minus smallest value", "Middle value", "Most frequent value"],
+      answer: 1,
+      explain: "Range = largest value minus smallest value."
+    }]
+  }, {
+    day: 30,
+    title: "Interpreting Data and Identifying Patterns",
+    objective: "Put it all together — read real-world health data and spot trends.",
+    concepts: ["Look for trends over time (increasing? decreasing? seasonal?)", "Look for groups with higher rates (age, sex, location, occupation)", "Look for geographic patterns on maps", "Always ask: is this pattern real or could it be due to better reporting or population changes?"],
+    activity: "Flu rates rise every November-February, peak in January, and drop by March. What does this tell you? What factors explain the seasonal pattern? How would an epidemiologist confirm it?",
+    vocab: ["Secular trend", "Seasonal variation", "Pattern recognition", "Interpretation"],
+    funFact: "Flu is seasonal partly because people spend more time indoors in winter sharing air. Cold, dry air also helps the virus survive longer!",
+    quiz: [{
+      q: "A disease that rises every winter shows:",
+      options: ["A secular trend", "Seasonal variation", "No pattern", "A cluster"],
+      answer: 1,
+      explain: "Regular yearly cycles are seasonal variation."
+    }, {
+      q: "A long-term change over years or decades is a:",
+      options: ["Seasonal variation", "Secular trend", "Cluster", "Outbreak"],
+      answer: 1,
+      explain: "Secular trends are changes over a long period of years or decades."
+    }, {
+      q: "When you see a sudden spike in cases, you should also consider:",
+      options: ["It's always a real outbreak", "It could be due to better reporting", "It's never important", "The data is fake"],
+      answer: 1,
+      explain: "Apparent increases can sometimes be due to better reporting or population changes."
+    }]
+  }]
+}, {
+  week: 7,
+  theme: "Control and Prevention",
+  color: "#2d5a00",
+  icon: "🛡️",
+  days: [{
+    day: 31,
+    title: "Breaking the Chain of Infection",
+    objective: "Learn all the ways we can stop disease from spreading.",
+    concepts: ["Target the AGENT: antibiotics, antivirals, disinfection.", "Target the RESERVOIR: treating infected animals, isolating patients.", "Target the MODE OF TRANSMISSION: handwashing, masks, mosquito control, clean water.", "Target the SUSCEPTIBLE HOST: vaccines, healthy lifestyle, chemoprophylaxis."],
+    activity: "For each disease, identify the best point in the chain to break: (1) Malaria, (2) Food poisoning, (3) Measles, (4) HIV. What specific intervention would you use?",
+    vocab: ["Isolation", "Quarantine", "Disinfection", "Chemoprophylaxis", "Herd immunity"],
+    funFact: "The single most effective way to prevent infectious disease spread? Plain old handwashing! It reduces respiratory illness by 16-21% and diarrheal disease by up to 40%.",
+    quiz: [{
+      q: "Vaccines protect against disease by targeting which part of the chain?",
+      options: ["The agent", "The reservoir", "The susceptible host", "The portal of exit"],
+      answer: 2,
+      explain: "Vaccines make the host less susceptible, breaking the chain there."
+    }, {
+      q: "Handwashing and mosquito control target which link?",
+      options: ["The agent", "The mode of transmission", "The host's genes", "The reservoir only"],
+      answer: 1,
+      explain: "These interventions interrupt the mode of transmission."
+    }, {
+      q: "Antibiotics fight disease by targeting the:",
+      options: ["Agent", "Environment", "Weather", "Map"],
+      answer: 0,
+      explain: "Antibiotics directly target the disease-causing agent."
+    }]
+  }, {
+    day: 32,
+    title: "Levels of Prevention",
+    objective: "Understand the 4 levels of prevention from birth to rehabilitation.",
+    concepts: ["Primordial prevention: prevent risk factors from developing at all (early childhood healthy habits).", "Primary prevention: prevent disease before it occurs (vaccines, diet, exercise).", "Secondary prevention: early detection and treatment (cancer screening, blood pressure checks).", "Tertiary prevention: reduce complications and disability once disease is established."],
+    activity: "For type 2 diabetes, give one example of primordial, primary, secondary, and tertiary prevention. Which level saves the most money long-term?",
+    vocab: ["Primordial prevention", "Primary prevention", "Secondary prevention", "Tertiary prevention", "Screening"],
+    funFact: "Every $1 spent on childhood vaccines saves $10-15 in future healthcare costs. Prevention is almost always cheaper than treatment!",
+    quiz: [{
+      q: "Vaccination to prevent disease before it occurs is:",
+      options: ["Primordial prevention", "Primary prevention", "Secondary prevention", "Tertiary prevention"],
+      answer: 1,
+      explain: "Primary prevention stops disease before it starts (e.g., vaccines)."
+    }, {
+      q: "Cancer screening to catch disease early is:",
+      options: ["Primary prevention", "Secondary prevention", "Tertiary prevention", "No prevention"],
+      answer: 1,
+      explain: "Secondary prevention is early detection and treatment."
+    }, {
+      q: "Physical therapy after a stroke to reduce disability is:",
+      options: ["Primary prevention", "Secondary prevention", "Tertiary prevention", "Primordial prevention"],
+      answer: 2,
+      explain: "Tertiary prevention reduces complications once disease is established."
+    }]
+  }, {
+    day: 33,
+    title: "Communicable Disease Control",
+    objective: "Follow the 10 steps for controlling infectious disease outbreaks.",
+    concepts: ["Diagnosis, Notification, Isolation, Treatment, Quarantine", "Investigation, Disinfection, Blocking transmission, Immunization, Health education", "Isolation = restricting sick people. Quarantine = restricting exposed but healthy people.", "Prophylaxis = treatment given to exposed people BEFORE they get sick."],
+    activity: "There is a measles outbreak at your school. Walk through all 10 steps. Be specific: what happens to sick students? Exposed students? Unvaccinated students?",
+    vocab: ["Isolation", "Quarantine", "Prophylaxis", "Notification", "Disinfection"],
+    funFact: "In the COVID-19 pandemic, some countries used smartphone apps for contact tracing — automatically notifying people if they had been near a positive case!",
+    quiz: [{
+      q: "What is the difference between isolation and quarantine?",
+      options: ["They are the same", "Isolation is for sick people; quarantine is for exposed healthy people", "Quarantine is for sick people only", "Isolation is for animals"],
+      answer: 1,
+      explain: "Isolation restricts sick people; quarantine restricts exposed but healthy people."
+    }, {
+      q: "Treatment given to exposed people BEFORE symptoms is:",
+      options: ["Quarantine", "Prophylaxis", "Isolation", "Disinfection"],
+      answer: 1,
+      explain: "Prophylaxis is preventive treatment given before illness onset."
+    }, {
+      q: "What is usually the FIRST step in controlling a disease?",
+      options: ["Health education", "Diagnosis", "Disinfection", "Quarantine"],
+      answer: 1,
+      explain: "Diagnosis is the first step — you must identify the disease to control it."
+    }]
+  }, {
+    day: 34,
+    title: "Non-Communicable Disease Prevention",
+    objective: "Learn how public health tackles chronic diseases that are not contagious.",
+    concepts: ["NCDs include heart disease, cancer, diabetes, and chronic respiratory disease.", "They share common behavioral risk factors: smoking, poor diet, physical inactivity, alcohol.", "Population-wide strategies target everyone; high-risk strategies target vulnerable individuals.", "Health literacy and social marketing help change behaviors at the community level."],
+    activity: "Design a 2-minute public health campaign for your school targeting one NCD risk factor. What is your message? How would you deliver it? How would you measure if it worked?",
+    vocab: ["Non-communicable disease", "Risk factor", "Health literacy", "Social marketing", "Life-course approach"],
+    funFact: "Tobacco use is the number 1 preventable cause of death in the US. Epidemiologists' work in the 1950s first proved smoking caused lung cancer!",
+    quiz: [{
+      q: "Which is a non-communicable disease?",
+      options: ["Measles", "Heart disease", "Flu", "COVID-19"],
+      answer: 1,
+      explain: "Heart disease is non-communicable — it does not spread between people."
+    }, {
+      q: "Which is a SHARED behavioral risk factor for many NCDs?",
+      options: ["Smoking", "Getting a vaccine", "Washing hands", "Sleeping"],
+      answer: 0,
+      explain: "Smoking, poor diet, inactivity, and alcohol are shared NCD risk factors."
+    }, {
+      q: "A strategy targeting an entire population is a:",
+      options: ["High-risk approach", "Population-wide approach", "Individual treatment", "Surgery"],
+      answer: 1,
+      explain: "Population-wide strategies target everyone, not just high-risk individuals."
+    }]
+  }, {
+    day: 35,
+    title: "Injury Prevention and Public Health",
+    objective: "See how public health applies to accidents and injuries — not just germs.",
+    concepts: ["Injuries are a major public health problem: falls, poisoning, motor vehicles, drowning, violence.", "The epidemiological approach applies to injuries just like infectious disease.", "Injuries can be intentional (violence, suicide) or unintentional (accidents).", "Prevention can target the host (seatbelts), agent (speed limits), or environment (safer road design)."],
+    activity: "Choose one injury type (car crashes, falls, or drowning). Identify: (1) One primary prevention strategy, (2) One secondary prevention strategy, (3) What data an epidemiologist would collect.",
+    vocab: ["Injury epidemiology", "Unintentional injury", "Intentional injury", "Primary prevention", "Risk factor"],
+    funFact: "Motor vehicle injuries dropped dramatically after seatbelt laws, airbag requirements, and drunk driving laws — all public health interventions, not just medical ones!",
+    quiz: [{
+      q: "A car crash is an example of an:",
+      options: ["Infectious disease", "Unintentional injury", "Intentional injury", "Chronic disease"],
+      answer: 1,
+      explain: "Accidental injuries like car crashes are unintentional injuries."
+    }, {
+      q: "Can the epidemiological approach be used for injuries?",
+      options: ["No, only for germs", "Yes, just like infectious disease", "Only for animals", "Never"],
+      answer: 1,
+      explain: "Epidemiology applies to injuries the same way it does to infectious disease."
+    }, {
+      q: "A seatbelt law is a prevention strategy that targets the:",
+      options: ["Host (person)", "Weather", "Virus", "Lab"],
+      answer: 0,
+      explain: "Seatbelts protect the host (the person), reducing injury severity."
+    }]
+  }]
+}, {
+  week: 8,
+  theme: "Practice and Competition Prep",
+  color: "#3a3a8a",
+  icon: "🏆",
+  days: [{
+    day: 36,
+    title: "Foodborne Illness Deep Dive",
+    objective: "Master common foodborne pathogens and their characteristics.",
+    concepts: ["Salmonella: poultry, eggs, reptiles; 6-48 hr incubation; diarrhea, fever", "E. coli O157:H7: undercooked beef, raw produce; can cause kidney failure", "Norovirus: shellfish, surfaces; 12-48 hr incubation; explosive vomiting", "Campylobacter: poultry, unpasteurized milk; most common bacterial foodborne illness in the US", "Listeria: deli meats, soft cheese; serious for pregnant women; can survive refrigeration!"],
+    activity: "10 people got sick after a party. Symptoms: sudden vomiting after 1 hour. What pathogen is most likely? What food is most suspect? What would you need to confirm?",
+    vocab: ["Salmonella", "E. coli", "Norovirus", "Listeria", "Incubation period"],
+    funFact: "Listeria is the only foodborne pathogen that grows in your refrigerator! That is why it is so dangerous — people think refrigerated food is always safe.",
+    quiz: [{
+      q: "Which foodborne pathogen can grow in the refrigerator?",
+      options: ["Salmonella", "Listeria", "Norovirus", "E. coli"],
+      answer: 1,
+      explain: "Listeria is unusual because it can survive and grow at refrigerator temperatures."
+    }, {
+      q: "Salmonella is commonly linked to which food?",
+      options: ["Poultry and eggs", "Bread", "Bottled water", "Candy"],
+      answer: 0,
+      explain: "Salmonella is often found in poultry, eggs, and reptiles."
+    }, {
+      q: "Explosive vomiting after eating shellfish suggests:",
+      options: ["Listeria", "Norovirus", "E. coli", "Healthy food"],
+      answer: 1,
+      explain: "Norovirus, often from shellfish and surfaces, causes sudden vomiting."
+    }]
+  }, {
+    day: 37,
+    title: "Vector-Borne Disease Focus",
+    objective: "Study major diseases spread by vectors with a focus on mosquitoes and ticks.",
+    concepts: ["Mosquito-borne: Malaria, Dengue, Zika, West Nile Virus, Yellow Fever", "Tick-borne: Lyme disease, Rocky Mountain Spotted Fever", "Lyme disease is the most common tick-borne disease in the US (northeastern states)", "Prevention: repellents, protective clothing, eliminating standing water, pesticides"],
+    activity: "Research Lyme disease: (1) What causes it? (2) What vector carries it? (3) What are the symptoms? (4) How is it treated? (5) Create one prevention tip.",
+    vocab: ["Vector", "Reservoir", "Zoonosis", "Endemic zone", "Arbovirus"],
+    funFact: "The Aedes aegypti mosquito, which spreads dengue, Zika, and yellow fever, is most active during DAYTIME — so sleeping under a net at night does not fully protect you!",
+    quiz: [{
+      q: "Lyme disease is spread by:",
+      options: ["Mosquitoes", "Ticks", "Flies", "Water"],
+      answer: 1,
+      explain: "Lyme disease is the most common tick-borne disease in the US."
+    }, {
+      q: "Which disease is NOT spread by mosquitoes?",
+      options: ["Malaria", "Dengue", "Lyme disease", "Zika"],
+      answer: 2,
+      explain: "Lyme disease is tick-borne; the others are mosquito-borne."
+    }, {
+      q: "A good way to prevent mosquito-borne disease is to:",
+      options: ["Eliminate standing water", "Eat more candy", "Stay up all night", "Avoid washing hands"],
+      answer: 0,
+      explain: "Eliminating standing water removes mosquito breeding sites."
+    }]
+  }, {
+    day: 38,
+    title: "Vaccines and Herd Immunity",
+    objective: "Understand how vaccines protect individuals AND communities.",
+    concepts: ["Active immunity: your body makes antibodies after infection or vaccination.", "Passive immunity: antibodies passed from mother to baby or given by injection.", "Herd immunity: when enough people are immune, disease cannot spread — even unvaccinated people are protected.", "Herd immunity threshold varies: measles needs about 95% immunity; polio needs about 80-85%."],
+    activity: "Draw a diagram showing: (1) A fully unvaccinated community during a measles outbreak, (2) A community with 95% vaccination during measles exposure. Explain the difference.",
+    vocab: ["Vaccine", "Active immunity", "Passive immunity", "Herd immunity", "Herd immunity threshold"],
+    funFact: "Smallpox was eradicated in 1980 — the only human disease ever completely wiped out — entirely through vaccination campaigns. There are no natural cases left on Earth!",
+    quiz: [{
+      q: "Herd immunity protects:",
+      options: ["Only vaccinated people", "Even unvaccinated people by reducing spread", "Only animals", "No one"],
+      answer: 1,
+      explain: "When enough people are immune, disease cannot spread, protecting everyone."
+    }, {
+      q: "Antibodies passed from a mother to her baby are an example of:",
+      options: ["Active immunity", "Passive immunity", "Herd immunity", "No immunity"],
+      answer: 1,
+      explain: "Passive immunity is antibodies produced by another host."
+    }, {
+      q: "Which disease was completely eradicated by vaccination?",
+      options: ["Flu", "Smallpox", "Malaria", "COVID-19"],
+      answer: 1,
+      explain: "Smallpox is the only human disease ever fully eradicated, declared so in 1980."
+    }]
+  }, {
+    day: 39,
+    title: "Bioterrorism and Emergency Preparedness",
+    objective: "Learn how public health prepares for and responds to intentional threats.",
+    concepts: ["Category A agents (highest risk): anthrax, smallpox, plague, botulism, tularemia, hemorrhagic fevers.", "Syndromic surveillance is critical for early detection of bioterrorism attacks.", "Epidemiologists look for unusual patterns: disease in atypical populations or unusual routes of exposure.", "Preparedness requires stockpiling medicines, training responders, and public communication plans."],
+    activity: "In 2001, anthrax was mailed to news organizations and Senate offices. How would epidemiologists figure out: (1) Who was at risk, (2) How it spread, (3) Who to treat preventively?",
+    vocab: ["Bioterrorism", "Category A agent", "Anthrax", "Syndromic surveillance", "Strategic National Stockpile"],
+    funFact: "The 2001 anthrax attacks killed 5 people and infected 17 others. The FBI and CDC investigation was one of the largest in US history and took 7 years to solve!",
+    quiz: [{
+      q: "Which surveillance type helps detect bioterrorism early?",
+      options: ["Passive surveillance", "Syndromic surveillance", "No surveillance", "Census"],
+      answer: 1,
+      explain: "Syndromic surveillance watches symptom patterns for early warning of attacks."
+    }, {
+      q: "Anthrax is classified as a:",
+      options: ["Category A (highest risk) agent", "Harmless germ", "Vitamin", "Vaccine"],
+      answer: 0,
+      explain: "Anthrax is a Category A bioterrorism agent, the highest risk category."
+    }, {
+      q: "A clue that an outbreak might be intentional is:",
+      options: ["Disease in unusual populations or routes", "Normal seasonal flu", "Expected number of cases", "A common cold"],
+      answer: 0,
+      explain: "Unusual patterns, populations, or exposure routes can signal an intentional attack."
+    }]
+  }, {
+    day: 40,
+    title: "Full Practice Investigation",
+    objective: "Apply everything you have learned to solve a complete outbreak scenario.",
+    concepts: ["Review: 13 steps of outbreak investigation", "Review: case definitions and line listings", "Review: calculating attack rates, relative risk, and odds ratios", "Review: epi curve interpretation and control measures"],
+    activity: "MINI COMPETITION PRACTICE: 25 students got sick after school lunch. Symptoms: diarrhea and stomach cramps 8 hours after eating. Not everyone who ate got sick. (1) Write a case definition, (2) Create a line listing template, (3) Hypothesize the agent, (4) Design a cohort study, (5) List control measures.",
+    vocab: ["Outbreak investigation", "Case definition", "Attack rate", "Epi curve", "Control measures"],
+    funFact: "Science Olympiad Disease Detectives tests your ability to think like an epidemiologist under time pressure. The skills you built this summer are exactly what public health professionals use every day!",
+    quiz: [{
+      q: "What is the FIRST thing to do when investigating this outbreak?",
+      options: ["Write a case definition", "Panic", "Close the school forever", "Ignore it"],
+      answer: 0,
+      explain: "A clear case definition is foundational before counting and comparing cases."
+    }, {
+      q: "To find which food caused it, you would calculate:",
+      options: ["Attack rates for each food", "The weather", "Students' grades", "Bus routes"],
+      answer: 0,
+      explain: "Comparing attack rates by food eaten points to the likely source."
+    }, {
+      q: "An 8-hour incubation with diarrhea and cramps best fits which type of agent?",
+      options: ["A fast-acting bacterial toxin or bacteria", "A vaccine", "A vitamin", "Clean food"],
+      answer: 0,
+      explain: "A short incubation with GI symptoms points to a bacterial cause; next step is lab confirmation."
+    }]
+  }]
+}]
+
+const allVocab = [...new Set(weeks.flatMap(w => w.days.flatMap(d => d.vocab)))];
+const allDays = weeks.flatMap(w => w.days);
+
+// ── STATE ──────────────────────────────────────────────────────────
+function load(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def;}catch{return def;}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
+
+let S = {
+  view: 'home',
+  selWeek: null,
+  selDay: null,
+  done: load('dd_done',[]),
+  scores: load('dd_scores',{}),
+  q: {active:false,idx:0,sel:null,chk:false,right:0,fin:false},
+  fc: {idx:0,rev:false}
+};
+
+function setState(patch){ Object.assign(S,patch); render(); }
+function setQ(patch){ Object.assign(S.q,patch); render(); }
+function setFc(patch){ Object.assign(S.fc,patch); render(); }
+
+function toggleDone(n){
+  S.done = S.done.includes(n) ? S.done.filter(x=>x!==n) : [...S.done,n];
+  save('dd_done',S.done);
+  setState({view:'week'});
+}
+
+// ── HELPERS ────────────────────────────────────────────────────────
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const progress = () => Math.round((S.done.length/40)*100);
+const weekOf = day => weeks.find(w=>w.days.some(d=>d.day===day.day));
+const letters = ['A','B','C','D'];
+
+// ── RENDER HOME ────────────────────────────────────────────────────
+function renderHome(){
+  const p=progress(), qc=Object.keys(S.scores).length, qp=Object.values(S.scores).reduce((a,b)=>a+b,0);
+  const weekCards = weeks.map((wk,wi)=>{
+    const wd=wk.days.filter(d=>S.done.includes(d.day)).length;
+    return `<div class="week-row" onclick="goWeek(${wi})">
+      <div class="week-icon" style="background:${wk.color}">${wk.icon}</div>
+      <div style="flex:1">
+        <div class="label" style="margin-bottom:2px">WEEK ${wk.week} · DAYS ${wk.days[0].day}-${wk.days[4].day}</div>
+        <div style="font-size:16px;font-weight:bold;margin-bottom:6px">${esc(wk.theme)}</div>
+        <div class="pbar-sm"><div class="pbar-sm-fill" style="width:${(wd/5)*100}%;background:${wk.color}"></div></div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:18px;font-weight:bold;color:${wd===5?'#4af':'#8899bb'}">${wd}/5</div>
+        <div class="dim" style="font-size:11px">days</div>
+      </div>
+    </div>`;
+  }).join('');
+  return `<div class="hero">
+    <div style="font-size:38px;margin-bottom:6px">🦠🔍</div>
+    <h1 style="font-size:26px;letter-spacing:1px;margin-bottom:4px">Disease Detectives</h1>
+    <p class="sub" style="font-size:14px;margin-bottom:18px">Summer Science Olympiad Course · Division B · 8 Weeks · 40 Days</p>
+    <div style="max-width:400px;margin:0 auto">
+      <div style="display:flex;justify-content:space-between;font-size:13px;color:#8899bb;margin-bottom:5px">
+        <span>Lessons complete</span><span>${S.done.length}/40</span>
+      </div>
+      <div style="background:#1a1f35;border-radius:8px;height:10px;overflow:hidden">
+        <div style="height:100%;width:${p}%;background:linear-gradient(90deg,#1a6b3c,#4af);border-radius:8px;transition:width .4s"></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:14px">
+        <div class="stat-box"><div style="font-size:18px">📅</div><div class="stat-num">${p}%</div><div class="stat-lbl">done</div></div>
+        <div class="stat-box"><div style="font-size:18px">🧠</div><div class="stat-num">${qc}</div><div class="stat-lbl">quizzes</div></div>
+        <div class="stat-box"><div style="font-size:18px">⭐</div><div class="stat-num">${qp}</div><div class="stat-lbl">points</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="wrap">
+    <button class="btn btn-outline" onclick="goVocab()" style="margin-bottom:24px">🃏 Vocabulary Flash Cards (${allVocab.length} terms)</button>
+    ${weekCards}
+    <div class="tip-box"><strong style="color:#c8d8f8">How to use this course:</strong><br>Each day = ~15 minutes. Read the concepts, do the activity, take the 3-question quiz, then mark it complete. Progress saves automatically. Use flash cards any time to drill vocabulary.</div>
+  </div>`;
+}
+
+// ── RENDER WEEK ────────────────────────────────────────────────────
+function renderWeek(){
+  const wk=weeks[S.selWeek];
+  const days = wk.days.map(day=>{
+    const isDone=S.done.includes(day.day), sc=S.scores[day.day];
+    return `<div class="day-row" onclick="goDay(${day.day})">
+      <div class="circle" style="background:${isDone?wk.color:'#2a3550'}">${isDone?'✓':day.day}</div>
+      <div style="flex:1">
+        <div style="font-weight:bold;font-size:16px;margin-bottom:4px">${esc(day.title)}</div>
+        <div class="sub" style="font-size:13px;line-height:1.4">${esc(day.objective)}</div>
+        ${sc!==undefined?`<div style="font-size:12px;margin-top:5px;font-family:monospace;color:${sc===3?'#2ec36b':'#e8a33d'}">Quiz best: ${sc}/3</div>`:''}
+      </div>
+      <div class="dim" style="font-size:20px">›</div>
+    </div>`;
+  }).join('');
+  return `<div class="header-bar" style="background:${wk.color}">
+    <button class="back-btn" onclick="goHome()">← Home</button>
+    <div style="font-size:26px;font-weight:bold">${wk.icon} Week ${wk.week}</div>
+    <div style="font-size:17px;opacity:.9">${esc(wk.theme)}</div>
+  </div>
+  <div class="wrap">${days}</div>`;
+}
+
+// ── RENDER QUIZ ────────────────────────────────────────────────────
+function renderQuiz(){
+  const wk=weekOf(S.selDay), q=S.selDay.quiz[S.q.idx];
+  const bars=S.selDay.quiz.map((_,i)=>`<div class="qbar" style="background:${i<S.q.idx?wk.color:i===S.q.idx?'#5a6a8a':'#1a1f35'}"></div>`).join('');
+  const opts=q.options.map((opt,i)=>{
+    let bg='#1a1f35',brd='1px solid #2a3550',suffix='';
+    if(S.q.chk){
+      if(i===q.answer){bg='#143a1f';brd='2px solid #2ec36b';suffix='<span class="green" style="margin-left:auto;flex-shrink:0">✓</span>';}
+      else if(i===S.q.sel){bg='#3a1414';brd='2px solid #d64545';suffix='<span style="color:#d64545;margin-left:auto;flex-shrink:0">✗</span>';}
+    } else if(i===S.q.sel){bg='#1f2740';brd=`2px solid ${wk.color}`;}
+    return `<button class="opt-btn" style="background:${bg};border:${brd}" onclick="${S.q.chk?'':'selectOpt('+i+')'}" ${S.q.chk?'disabled':''}>
+      <span class="opt-letter">${letters[i]}</span><span style="flex:1">${esc(opt)}</span>${suffix}
+    </button>`;
+  }).join('');
+  const explain = S.q.chk ? `<div class="explain" style="border-left:3px solid ${wk.color}">
+    <strong style="color:${S.q.sel===q.answer?'#2ec36b':'#e8a33d'}">${S.q.sel===q.answer?'Correct! ':'Not quite. '}</strong>${esc(q.explain)}
+  </div>` : '';
+  const actionBtn = !S.q.chk
+    ? `<button class="btn" style="background:${S.q.sel===null?'#2a3550':''+wk.color}" onclick="checkAns()" ${S.q.sel===null?'disabled':''}>Check Answer</button>`
+    : `<button class="btn" style="background:${wk.color}" onclick="nextQ()">${S.q.idx+1<S.selDay.quiz.length?'Next Question →':'See Results →'}</button>`;
+  return `<div style="background:${wk.color};padding:16px 20px;display:flex;justify-content:space-between;align-items:center">
+    <strong style="font-size:17px">Quiz · Day ${S.selDay.day}</strong>
+    <span style="font-family:monospace;font-size:13px">Q${S.q.idx+1}/${S.selDay.quiz.length}</span>
+  </div>
+  <div class="wrap">
+    <div class="qbar-wrap">${bars}</div>
+    <p style="font-size:19px;line-height:1.5;margin-bottom:22px;font-weight:bold">${esc(q.q)}</p>
+    ${opts}${explain}${actionBtn}
+  </div>`;
+}
+
+// ── RENDER DAY ─────────────────────────────────────────────────────
+function renderDay(){
+  if(S.q.active) return renderQuiz();
+  const wk=weekOf(S.selDay), isDone=S.done.includes(S.selDay.day), prev=S.scores[S.selDay.day];
+  const concepts=S.selDay.concepts.map(c=>`<div class="concept-row"><span class="arrow" style="color:${wk.color}">▸</span><span>${esc(c)}</span></div>`).join('');
+  const tags=S.selDay.vocab.map(v=>`<span class="tag" style="border:1px solid ${wk.color}66">${esc(v)}</span>`).join('');
+  let quizContent;
+  if(S.q.fin){
+    const msg=S.q.right===3?'Perfect! Great work.':S.q.right>=2?'Nice — review explanations and retake.':'Re-read the concepts and try again!';
+    quizContent=`<div class="result-score" style="color:${S.q.right===3?'#2ec36b':'#e8a33d'}">${S.q.right}/3</div>
+      <div class="result-msg">${msg}</div>
+      <button class="btn" style="background:${wk.color}" onclick="startQuiz()">Retake Quiz</button>`;
+  } else {
+    quizContent=`<p style="font-size:14px;color:#9aaccc;margin-bottom:14px">A quick 3-question quiz on today's lesson.</p>
+      <button class="btn" style="background:${wk.color}" onclick="startQuiz()">${prev!==undefined?'Retake Quiz →':'Start Quiz →'}</button>`;
+  }
+  return `<div class="header-bar" style="background:${wk.color};display:flex;align-items:center;gap:12px">
+    <button class="back-btn" style="margin-bottom:0" onclick="goWeek(${weeks.indexOf(wk)})">← Back</button>
+    <div>
+      <div style="font-size:11px;opacity:.85;font-family:monospace">DAY ${S.selDay.day} / WEEK ${wk.week}</div>
+      <div style="font-size:19px;font-weight:bold">${wk.icon} ${esc(S.selDay.title)}</div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="card-accent" style="border:1px solid ${wk.color}44">
+      <div class="label">OBJECTIVE</div>
+      <div style="font-size:16px;line-height:1.6">${esc(S.selDay.objective)}</div>
+    </div>
+    <div class="card">
+      <div class="label">KEY CONCEPTS</div>
+      ${concepts}
+    </div>
+    <div class="card">
+      <div class="label">15-MINUTE ACTIVITY</div>
+      <div style="font-size:15px;line-height:1.7;color:#c8d8f8">${esc(S.selDay.activity)}</div>
+    </div>
+    <div class="card">
+      <div class="label">VOCABULARY</div>
+      <div>${tags}</div>
+    </div>
+    <div class="fun-box">💡 ${esc(S.selDay.funFact)}</div>
+    <div class="quiz-box" style="background:linear-gradient(135deg,#14213a,#1a1230);border:1px solid ${wk.color}55">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <strong style="font-size:16px">🧠 Check Your Understanding</strong>
+        ${prev!==undefined?`<span style="font-size:13px;font-family:monospace;color:${prev===3?'#2ec36b':'#e8a33d'}">Best: ${prev}/3</span>`:''}
+      </div>
+      ${quizContent}
+    </div>
+    <button class="btn" style="background:${isDone?'#2a4a2a':wk.color}" onclick="markDone(${S.selDay.day})">${isDone?'✅ Completed — Click to Unmark':'Mark Day as Complete ✓'}</button>
+  </div>`;
+}
+
+// ── RENDER VOCAB ───────────────────────────────────────────────────
+function renderVocab(){
+  const term=allVocab[S.fc.idx%allVocab.length];
+  const dt=allDays.find(d=>d.vocab.includes(term));
+  const wt=weekOf(dt)||{color:'#4af'};
+  const hint=S.fc.rev&&dt?(dt.concepts.find(c=>c.toLowerCase().includes(term.toLowerCase().split(' ')[0]))||dt.concepts[0]):'';
+  return `<div class="wrap" style="padding-top:24px">
+    <button class="btn btn-outline" style="width:auto;margin-bottom:24px;padding:8px 16px" onclick="goHome()">← Home</button>
+    <h2 style="margin-bottom:6px">🃏 Vocabulary Flash Cards</h2>
+    <p class="sub" style="margin-bottom:28px">${S.fc.idx+1} of ${allVocab.length} terms</p>
+    <div class="fc-card">
+      <div style="font-size:26px;font-weight:bold;margin-bottom:14px;color:${wt.color};filter:brightness(1.5)">${esc(term)}</div>
+      ${S.fc.rev&&dt?`<div style="font-size:15px;color:#c8d8f8;line-height:1.7;max-width:420px">
+        <div style="font-size:12px;color:#8899bb;margin-bottom:8px">From Day ${dt.day}: ${esc(dt.title)}</div>
+        ${esc(hint)}
+      </div>`:`<p style="color:#4a5a7a;font-size:15px">Try to define this term, then reveal.</p>`}
+    </div>
+    ${!S.fc.rev
+      ?`<button class="btn" style="background:#1a3a6a" onclick="revealFc()">Reveal</button>`
+      :`<button class="btn" style="background:#1a4a2a" onclick="nextFc()">Next Card →</button>`}
+    <button class="btn btn-outline" style="margin-top:0" onclick="shuffleFc()">🔀 Shuffle</button>
+  </div>`;
+}
+
+// ── MAIN RENDER ────────────────────────────────────────────────────
+function render(){
+  const app=document.getElementById('app');
+  if(S.view==='home') app.innerHTML=renderHome();
+  else if(S.view==='week') app.innerHTML=renderWeek();
+  else if(S.view==='day') app.innerHTML=renderDay();
+  else if(S.view==='vocab') app.innerHTML=renderVocab();
+  window.scrollTo(0,0);
+}
+
+// ── ACTIONS ────────────────────────────────────────────────────────
+function goHome(){ setState({view:'home'}); }
+function goWeek(wi){ setState({view:'week',selWeek:wi}); }
+function goVocab(){ setFc({idx:0,rev:false}); setState({view:'vocab'}); }
+function goDay(dayNum){
+  const day=allDays.find(d=>d.day===dayNum);
+  S.selDay=day; S.q={active:false,idx:0,sel:null,chk:false,right:0,fin:false};
+  setState({view:'day'});
+}
+function markDone(n){ toggleDone(n); }
+function startQuiz(){ S.q={active:true,idx:0,sel:null,chk:false,right:0,fin:false}; render(); }
+function selectOpt(i){ if(!S.q.chk){ S.q.sel=i; render(); } }
+function checkAns(){
+  if(S.q.sel===null) return;
+  if(S.q.sel===S.selDay.quiz[S.q.idx].answer) S.q.right++;
+  S.q.chk=true; render();
+}
+function nextQ(){
+  if(S.q.idx+1<S.selDay.quiz.length){ S.q.idx++; S.q.sel=null; S.q.chk=false; render(); }
+  else {
+    const best=Math.max(S.q.right, S.scores[S.selDay.day]||0);
+    S.scores={...S.scores,[S.selDay.day]:best};
+    save('dd_scores',S.scores);
+    S.q.active=false; S.q.fin=true; render();
+  }
+}
+function revealFc(){ setFc({rev:true}); }
+function nextFc(){ setFc({idx:(S.fc.idx+1)%allVocab.length,rev:false}); }
+function shuffleFc(){ setFc({idx:Math.floor(Math.random()*allVocab.length),rev:false}); }
+
+// ── BOOT ───────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
