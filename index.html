@@ -1072,14 +1072,23 @@ function load(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
 
 let S = {
-  view: 'home',
+  view: 'profiles',
+  profile: null,
+  profiles: load('dd_profiles',[]),
   selWeek: null,
   selDay: null,
-  done: load('dd_done',[]),
-  scores: load('dd_scores',{}),
+  done: [],
+  scores: {},
   q: {active:false,idx:0,sel:null,chk:false,right:0,fin:false},
   fc: {idx:0,rev:false}
 };
+
+function activateProfile(name){
+  S.profile = name;
+  S.done = load('dd_done_'+name, []);
+  S.scores = load('dd_scores_'+name, {});
+  save('dd_lastProfile', name);
+}
 
 function setState(patch){ Object.assign(S,patch); render(); }
 function setQ(patch){ Object.assign(S.q,patch); render(); }
@@ -1087,7 +1096,7 @@ function setFc(patch){ Object.assign(S.fc,patch); render(); }
 
 function toggleDone(n){
   S.done = S.done.includes(n) ? S.done.filter(x=>x!==n) : [...S.done,n];
-  save('dd_done',S.done);
+  save('dd_done_'+S.profile,S.done);
   setState({view:'week'});
 }
 
@@ -1115,7 +1124,11 @@ function renderHome(){
       </div>
     </div>`;
   }).join('');
-  return `<div class="hero">
+  return `<div style="background:#0d1218;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1a2540">
+    <span style="font-size:14px;color:#b8c8e8">👤 ${esc(S.profile)}</span>
+    <button onclick="switchUser()" style="background:#1a1f35;border:1px solid #2a3550;color:#b8c8e8;padding:6px 12px;border-radius:8px;font-size:13px;cursor:pointer;font-family:Georgia,serif">Switch user</button>
+  </div>
+  <div class="hero">
     <div style="font-size:38px;margin-bottom:6px">🦠🔍</div>
     <h1 style="font-size:26px;letter-spacing:1px;margin-bottom:4px">Disease Detectives</h1>
     <p class="sub" style="font-size:14px;margin-bottom:18px">Summer Science Olympiad Course · Division B · 8 Weeks · 40 Days</p>
@@ -1270,10 +1283,40 @@ function renderVocab(){
   </div>`;
 }
 
+// ── RENDER PROFILES (USER PICKER) ─────────────────────────────────
+function renderProfiles(){
+  const cards = S.profiles.map((name,i)=>{
+    const d = load('dd_done_'+name, []).length;
+    return `<div style="display:flex;gap:10px;align-items:center;margin-bottom:12px">
+      <button class="btn" style="background:#1a3a6a;margin-bottom:0;flex:1;display:flex;justify-content:space-between;align-items:center;text-align:left" onclick="pickProfileIdx(${i})">
+        <span>👤 ${esc(name)}</span><span style="font-size:13px;opacity:.8">${d}/40 done</span>
+      </button>
+      <button onclick="deleteProfileIdx(${i})" title="Remove" style="background:#2a1414;border:1px solid #5a2a2a;color:#d68585;width:46px;height:50px;border-radius:10px;cursor:pointer;font-size:18px;flex-shrink:0">🗑</button>
+    </div>`;
+  }).join('');
+  const intro = S.profiles.length
+    ? `<p class="sub" style="text-align:center;margin-bottom:24px">Who's learning today? Tap your name to continue, or add a new learner.</p>`
+    : `<p class="sub" style="text-align:center;margin-bottom:24px">Welcome! Add a learner to get started. Each learner's progress is tracked separately.</p>`;
+  return `<div class="hero">
+    <div style="font-size:38px;margin-bottom:6px">🦠🔍</div>
+    <h1 style="font-size:26px;letter-spacing:1px;margin-bottom:4px">Disease Detectives</h1>
+    <p class="sub" style="font-size:14px">Summer Science Olympiad Course · Division B</p>
+  </div>
+  <div class="wrap" style="padding-top:24px">
+    <h2 style="text-align:center;margin-bottom:10px">Choose a Learner</h2>
+    ${intro}
+    ${cards}
+    <button class="btn" style="background:#1a4a2a;margin-top:8px" onclick="addProfile()">+ Add a Learner</button>
+  </div>`;
+}
+
+
+
 // ── MAIN RENDER ────────────────────────────────────────────────────
 function render(){
   const app=document.getElementById('app');
-  if(S.view==='home') app.innerHTML=renderHome();
+  if(S.view==='profiles') app.innerHTML=renderProfiles();
+  else if(S.view==='home') app.innerHTML=renderHome();
   else if(S.view==='week') app.innerHTML=renderWeek();
   else if(S.view==='day') app.innerHTML=renderDay();
   else if(S.view==='vocab') app.innerHTML=renderVocab();
@@ -1281,6 +1324,26 @@ function render(){
 }
 
 // ── ACTIONS ────────────────────────────────────────────────────────
+function pickProfileIdx(i){ activateProfile(S.profiles[i]); setState({view:'home'}); }
+function switchUser(){ setState({view:'profiles'}); }
+function addProfile(){
+  const name = prompt("Enter the learner's name:");
+  if(name && name.trim()){
+    const clean = name.trim().slice(0,20);
+    if(!S.profiles.includes(clean)){ S.profiles=[...S.profiles,clean]; save('dd_profiles',S.profiles); }
+    activateProfile(clean);
+    setState({view:'home'});
+  }
+}
+function deleteProfileIdx(i){
+  const name = S.profiles[i];
+  if(confirm('Remove "'+name+'" and erase their progress? This cannot be undone.')){
+    S.profiles = S.profiles.filter((_,j)=>j!==i);
+    save('dd_profiles',S.profiles);
+    try{localStorage.removeItem('dd_done_'+name);localStorage.removeItem('dd_scores_'+name);}catch{}
+    render();
+  }
+}
 function goHome(){ setState({view:'home'}); }
 function goWeek(wi){ setState({view:'week',selWeek:wi}); }
 function goVocab(){ setFc({idx:0,rev:false}); setState({view:'vocab'}); }
@@ -1302,7 +1365,7 @@ function nextQ(){
   else {
     const best=Math.max(S.q.right, S.scores[S.selDay.day]||0);
     S.scores={...S.scores,[S.selDay.day]:best};
-    save('dd_scores',S.scores);
+    save('dd_scores_'+S.profile,S.scores);
     S.q.active=false; S.q.fin=true; render();
   }
 }
@@ -1311,7 +1374,16 @@ function nextFc(){ setFc({idx:(S.fc.idx+1)%allVocab.length,rev:false}); }
 function shuffleFc(){ setFc({idx:Math.floor(Math.random()*allVocab.length),rev:false}); }
 
 // ── BOOT ───────────────────────────────────────────────────────────
-render();
+(function boot(){
+  const last = load('dd_lastProfile', null);
+  if(S.profiles.length && last && S.profiles.includes(last)){
+    activateProfile(last);
+    S.view = 'home';
+  } else {
+    S.view = 'profiles';
+  }
+  render();
+})();
 </script>
 </body>
 </html>
